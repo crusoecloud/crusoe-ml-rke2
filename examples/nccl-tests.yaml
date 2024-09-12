@@ -10,11 +10,11 @@ spec:
     Launcher:
       replicas: 1
       template:
-         spec:
+        spec:
           restartPolicy: OnFailure
           initContainers:
           - image: crusoecloud/nccl-tests:h100-23.10-py3
-            imagePullPolicy: IfNotPresent
+            imagePullPolicy: Always
             name: init
             command: ["sh", "-c", "sleep 5"]
           volumes:
@@ -24,20 +24,27 @@ spec:
               type: Directory
           containers:
           - image: crusoecloud/nccl-tests:h100-23.10-py3
-            imagePullPolicy: IfNotPresent
+            imagePullPolicy: Always
             volumeMounts:
             - name: nccl-topo
               mountPath: /opt/nccl_topo
             name: nccl-test-launcher
+            securityContext:
+              capabilities:
+                add: ["IPC_LOCK"]
             env:
              - name: NCCL_TOPO_FILE
                value: /opt/nccl_topo/h100-80gb-sxm-ib-cloud-hypervisor.xml
+             - name: UCX_RNDV_SCHEME
+               value: "get_zcopy"   # UCX memory setting
+             - name: UCX_TLS
+               value: "self,sm,cuda_copy"   # UCX memory setting
             command:
             - /opt/hpcx/ompi/bin/mpirun
             - --allow-run-as-root
             - --tag-output
             - -np
-            - "16"
+            - "16"  # Total number of processes (8 GPUs per node, 2 nodes = 16 total if using 2 Worker Replicas)
             - -bind-to
             - none
             - -map-by
@@ -64,14 +71,14 @@ spec:
             - -x
             - LD_LIBRARY_PATH
             - -x
-            - NCCL_DEBUG=INFO
+            - NCCL_DEBUG=TRACE
             - -x
-            - NCCL_ALGO=RING
-            - /opt/nccl-tests/build/broadcast_perf
+            - NCCL_ALGO=NVLSTree
+            - /opt/nccl-tests/build/all_reduce_perf
             - -b
             - "8"
             - -e
-            - 2G
+            - "2G"
             - -f
             - "2"
             - -t
@@ -83,22 +90,34 @@ spec:
             - -n
             - "100"
     Worker:
-      replicas: 2
+      replicas: 2 # Specify how many worker nodes you have running in the Instances tab
       template:
         spec:
+          restartPolicy: OnFailure
           runtimeClassName: nvidia
           volumes:
           - name: dshm
             emptyDir:
               medium: Memory
+              sizeLimit: 64Gi
           - name: nccl-topo
             hostPath:
               path: /etc/crusoe/nccl_topo
               type: Directory
           containers:
           - image: crusoecloud/nccl-tests:h100-23.10-py3
-            imagePullPolicy: IfNotPresent
+            imagePullPolicy: Always
             name: nccl-worker
+            securityContext:
+              capabilities:
+                add: ["IPC_LOCK"]
+            env:
+             - name: NCCL_DEBUG
+               value: TRACE
+             - name: UCX_RNDV_SCHEME
+               value: "get_zcopy"   # UCX memory setting
+             - name: UCX_TLS
+               value: "self,sm,cuda_copy"   # UCX memory setting
             volumeMounts:
             - mountPath: /dev/shm
               name: dshm
@@ -106,10 +125,10 @@ spec:
               mountPath: /opt/nccl_topo
             resources:
               limits:
-                nvidia.com/gpu: 8
+                nvidia.com/gpu: 8 # 8 GPUs per node
                 nvidia.com/hostdev: 8
-                memory: 120000Mi
+                memory: 128000Mi
               requests:
-                nvidia.com/gpu: 8
+                nvidia.com/gpu: 8 # 8 GPUs per node
                 nvidia.com/hostdev: 8
-                memory: 120000Mi
+                memory: 128000Mi
