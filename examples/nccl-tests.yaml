@@ -16,7 +16,7 @@ spec:
           - image: crusoecloud/nccl-tests:h100-23.10-py3
             imagePullPolicy: Always
             name: init
-            command: ["sh", "-c", "sleep 5"]
+            command: ["sh", "-c", "sleep 90"]
           volumes:
           - name: nccl-topo
             hostPath:
