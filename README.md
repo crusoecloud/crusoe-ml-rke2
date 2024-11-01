@@ -82,5 +82,5 @@ To test the GPU infiniband speeds, you can run the following commands.
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/kubeflow/mpi-operator/v0.4.0/deploy/v2beta1/mpi-operator.yaml
-kubectl apply -f examples/nccl-test.yaml
+kubectl create -f examples/nccl-test.yaml
 ```
