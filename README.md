@@ -181,4 +181,6 @@ scatter_perf
 sendrecv_perf
 timer.o
 verifiable
+=======
+kubectl create -f examples/nccl-test.yaml
 ```
