@@ -1,11 +1,11 @@
 apiVersion: kubeflow.org/v2beta1
 kind: MPIJob
 metadata:
-  generateName: nccl-tests-gdr-16-
+  name: nccl-tests-gdr-16
 spec:
   slotsPerWorker: 8
   runPolicy:
-    cleanPodPolicy: None
+    cleanPodPolicy: Running
   mpiReplicaSpecs:
     Launcher:
       replicas: 1
@@ -16,7 +16,7 @@ spec:
           - image: crusoecloud/nccl-tests:h100-23.10-py3
             imagePullPolicy: Always
             name: init
-            command: ["sh", "-c", "sleep 90"]
+            command: ["sh", "-c", "sleep 5"]
           volumes:
           - name: nccl-topo
             hostPath:
@@ -132,3 +132,4 @@ spec:
                 nvidia.com/gpu: 8 # 8 GPUs per node
                 nvidia.com/hostdev: 8
                 memory: 128000Mi
+                

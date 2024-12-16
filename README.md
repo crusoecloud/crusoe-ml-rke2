@@ -75,7 +75,7 @@ For nodes with Nvidia GPUs, you can run the following commands to install the Nv
 helm repo add nvidia https://helm.ngc.nvidia.com/nvidia
 helm repo update
 helm install --wait --generate-name -n gpu-operator --create-namespace nvidia/gpu-operator --set driver.rdma.enabled=true --set driver.rdma.useHostMofed=true
-helm install network-operator nvidia/network-operator -n nvidia-network-operator --create-namespace -f ./gpu-operator/values.yaml --wait
+helm install network-operator nvidia/network-operator -n nvidia-network-operator --create-namespace --version v24.7.0	-f ./gpu-operator/values.yaml
 ```
 
 To test the GPU infiniband speeds, you can run the following commands.
