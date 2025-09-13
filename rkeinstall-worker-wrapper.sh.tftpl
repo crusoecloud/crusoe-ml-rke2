@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Run main worker script
+${worker_script}
+
+%{ if enable_dra_feature }
+echo "Applying DynamicResourceAllocation feature gate to worker..."
+cat << EOF >> /etc/rancher/rke2/config.yaml
+kubelet-arg:
+  - "--feature-gates=DynamicResourceAllocation=true"
+EOF
+systemctl restart rke2-agent.service
+systemctl disable --now nvidia-imex.service
+systemctl mask nvidia-imex.service
+%{ endif }

@@ -34,7 +34,7 @@ EOF
 
 #Starting RKE2 agent
 
-curl -sfL https://get.rke2.io | INSTALL_RKE2_TYPE="agent" sh -
+curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION="v1.32.6+rke2r1" sh -s
 
 #Restarting RKE2 agent
 

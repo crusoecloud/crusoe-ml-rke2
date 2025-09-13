@@ -89,6 +89,7 @@ resource "crusoe_compute_instance" "rke_headnode" {
     {
       is_main_headnode = count.index == 0
       headnode_has_ib = local.headnode_has_ib
+      enable_dra_feature = var.enable_dra_feature
     }
   )
   host_channel_adapters = local.headnode_has_ib ? [{ ib_partition_id = var.ib_partition_id }] : null
@@ -140,7 +141,10 @@ resource "crusoe_compute_instance" "workers" {
   ssh_key               = var.ssh_pubkey
   location              = var.deploy_location
   image                 = var.worker_image
-  startup_script        = file("${path.module}/rkeinstall-worker.sh")
+  startup_script        = templatefile("${path.module}/rkeinstall-worker-wrapper.sh.tftpl", {
+  enable_dra_feature    = var.enable_dra_feature
+  worker_script         = file("${path.module}/rkeinstall-worker.sh")
+  })
   host_channel_adapters = local.worker_has_ib ? [{ ib_partition_id = var.ib_partition_id }] : null
   provisioner "file" {
     content     = jsonencode(crusoe_compute_instance.rke_headnode[0])

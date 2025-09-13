@@ -26,6 +26,7 @@ module "crusoe" {
   ib_partition_id = "6dcef748-dc30-49d8-9a0b-6ac87a27b4f8"
   headnode_instance_type="c1a.8x"
   deploy_location = "us-east1-a"
+  enable_dra_feature = false
   # extra variables here
 }
 ```
@@ -41,8 +42,11 @@ worker_count = 2
 ib_partition_id = "6dcef748-dc30-49d8-9a0b-6ac87a27b4f8"
 headnode_instance_type="c1a.8x"
 deploy_location = "us-east1-a"
+enable_dra_feature = false
 # extra variables here
 ```
+Note: For GB200 SKU as `worker_instance_type`, set `enable_dra_feature = true`.
+
 
 And then apply, to provision resources
 
@@ -66,6 +70,8 @@ sed -i '' "s/127.0.0.1/${rke_endpoint}/g" ./kubeconfig
 sed -i '' "s/default/crusoe/g" ./kubeconfig
 export KUBECONFIG="$(pwd)/kubeconfig"
 ```
+
+Note: For GB200 SKU, please refer to [Knowledge Base Article](https://support.crusoecloud.com/hc/en-us/articles/41038210396443-NCCL-Performance-Validation-for-GB200-on-RKE2-Cluster-with-Dynamic-Resource-Allocation) for GPU support and NCCL Performance validation steps.
 
 ## Nvidia GPU Support
 

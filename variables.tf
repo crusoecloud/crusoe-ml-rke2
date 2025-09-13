@@ -50,3 +50,9 @@ variable "instance_name_prefix" {
   description = "Prefix to use for the instance names"
   default     = "crusoe"
 }
+
+variable "enable_dra_feature" {
+  description = "Add extra config settings for DynamicResourceAllocation for GB200s"
+  type        = bool
+  default     = false
+}

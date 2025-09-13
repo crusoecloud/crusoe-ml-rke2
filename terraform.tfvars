@@ -7,4 +7,5 @@ ib_partition_id = ""
 headnode_count = 2
 headnode_instance_type="c1a.8x"
 deploy_location = ""
+enable_dra_feature = false
 # extra variables here
