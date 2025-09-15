@@ -27,6 +27,7 @@ module "crusoe" {
   headnode_instance_type="c1a.8x"
   deploy_location = "us-east1-a"
   enable_dra_feature = false
+  rke_version = "v1.32.6+rke2r1"
   # extra variables here
 }
 ```
@@ -43,6 +44,7 @@ ib_partition_id = "6dcef748-dc30-49d8-9a0b-6ac87a27b4f8"
 headnode_instance_type="c1a.8x"
 deploy_location = "us-east1-a"
 enable_dra_feature = false
+rke_version = "v1.32.6+rke2r1"
 # extra variables here
 ```
 Note: For GB200 SKU as `worker_instance_type`, set `enable_dra_feature = true`.

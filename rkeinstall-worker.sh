@@ -31,12 +31,3 @@ cat << EOF > /etc/rancher/rke2/config.yaml
 server: https://$lb_host:9345
 token: $rke_token
 EOF
-
-#Starting RKE2 agent
-
-curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION="v1.32.6+rke2r1" sh -s
-
-#Restarting RKE2 agent
-
-systemctl enable rke2-agent.service
-systemctl start rke2-agent.service

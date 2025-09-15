@@ -51,7 +51,7 @@ kubelet-arg:
 
 EOF
 
-curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION="v1.32.6+rke2r1" sh -s
+curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION="${rke_version}" sh -s
 systemctl enable rke2-server.service
 systemctl start rke2-server.service
 
@@ -87,7 +87,7 @@ kubelet-arg:
 
 EOF
 
-curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION="v1.32.6+rke2r1" sh -s
+curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION="${rke_version}" sh -s
 systemctl enable rke2-server.service
 systemctl start rke2-server.service
 

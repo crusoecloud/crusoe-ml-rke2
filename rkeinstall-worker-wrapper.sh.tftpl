@@ -9,7 +9,19 @@ cat << EOF >> /etc/rancher/rke2/config.yaml
 kubelet-arg:
   - "--feature-gates=DynamicResourceAllocation=true"
 EOF
-systemctl restart rke2-agent.service
+
 systemctl disable --now nvidia-imex.service
 systemctl mask nvidia-imex.service
 %{ endif }
+
+#Starting RKE2 agent
+export INSTALL_RKE2_TYPE="agent"
+export INSTALL_RKE2_VERSION="${rke_version}"
+curl -sfL https://get.rke2.io | sh -
+
+#Restarting RKE2 agent
+systemctl enable rke2-agent.service
+systemctl start rke2-agent.service
+
+#Wait until the service file exists
+while [ ! -f /etc/systemd/system/rke2-agent.service ]; do sleep 1; done

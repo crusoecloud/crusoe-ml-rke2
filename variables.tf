@@ -56,3 +56,9 @@ variable "enable_dra_feature" {
   type        = bool
   default     = false
 }
+
+variable "rke_version" {
+  description = "RKE2 version to install"
+  type        = string
+  default     = "v1.32.6+rke2r1"  # default
+}
