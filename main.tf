@@ -8,7 +8,8 @@ terraform {
 
 locals {
   use_lb            = var.headnode_count > 1 ? true:false
-  haproxy_config     = !local.use_lb ? "" : <<-EOT
+  is_rke_v1_33      = can(regex("v1.33.[0-9]\\+rke2r1", var.rke_version))
+  haproxy_config    = !local.use_lb ? "" : <<-EOT
     global
         log /dev/log local0
         log /dev/log local1 notice
@@ -52,8 +53,8 @@ locals {
     EOT
   headnode_entry    = local.use_lb ? one(crusoe_compute_instance.rke_lb) : one(crusoe_compute_instance.rke_headnode)
   ingress_interface = local.headnode_entry.network_interfaces[0]
-  headnode_has_ib  = strcontains(lower(var.headnode_instance_type), "sxm-ib")
-  worker_has_ib = strcontains(lower(var.worker_instance_type), "sxm-ib")
+  headnode_has_ib  = strcontains(lower(var.headnode_instance_type), "sxm-ib") || strcontains(lower(var.headnode_instance_type), "nvl-ib")
+  worker_has_ib = strcontains(lower(var.worker_instance_type), "sxm-ib") || strcontains(lower(var.worker_instance_type), "nvl-ib")
 }
 
 
@@ -90,6 +91,7 @@ resource "crusoe_compute_instance" "rke_headnode" {
       is_main_headnode = count.index == 0
       headnode_has_ib = local.headnode_has_ib
       enable_dra_feature = var.enable_dra_feature
+      is_rke_v1_33       = local.is_rke_v1_33
       rke_version         = var.rke_version
     }
   )
@@ -144,6 +146,7 @@ resource "crusoe_compute_instance" "workers" {
   image                 = var.worker_image
   startup_script        = templatefile("${path.module}/rkeinstall-worker-wrapper.sh.tftpl", {
   enable_dra_feature    = var.enable_dra_feature
+  is_rke_v1_33          = local.is_rke_v1_33
   rke_version           = var.rke_version
   worker_script         = file("${path.module}/rkeinstall-worker.sh")
   })
